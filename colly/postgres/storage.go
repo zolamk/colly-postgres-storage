@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strconv"
 
 	_ "github.com/lib/pq" //
 )
@@ -30,7 +31,7 @@ func (s *Storage) Init() error {
 		log.Fatal(err)
 	}
 
-	query := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (request_id bigint not null);", s.VisitedTable)
+	query := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (request_id text not null);", s.VisitedTable)
 
 	if _, err = s.db.Exec(query); err != nil {
 		log.Fatal(err)
@@ -53,7 +54,7 @@ func (s *Storage) Visited(requestID uint64) error {
 
 	query := fmt.Sprintf(`INSERT INTO %s (request_id) VALUES($1);`, s.VisitedTable)
 
-	_, err = s.db.Exec(query, requestID)
+	_, err = s.db.Exec(query, strconv.FormatUint(requestID, 10))
 
 	return err
 
@@ -66,7 +67,7 @@ func (s *Storage) IsVisited(requestID uint64) (bool, error) {
 
 	query := fmt.Sprintf(`SELECT EXISTS(SELECT request_id FROM %s WHERE request_id = $1)`, s.VisitedTable)
 
-	err := s.db.QueryRow(query, requestID).Scan(&isVisited)
+	err := s.db.QueryRow(query, strconv.FormatUint(requestID, 10)).Scan(&isVisited)
 
 	return isVisited, err
 
