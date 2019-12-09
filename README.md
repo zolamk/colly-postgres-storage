@@ -18,7 +18,7 @@ func main() {
 
 	c := colly.NewCollector()
 
-	storage := &mongo.Storage{
+	storage := &postgres.Storage{
         URI:      "postgres://username:password@localhost:5432/database",
         VisitedTable: "colly_visited",
         CookiesTable: "colly_cookies",
