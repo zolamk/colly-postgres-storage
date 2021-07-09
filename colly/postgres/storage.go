@@ -12,10 +12,11 @@ import (
 
 // Storage implements a PostgreSQL storage backend for colly
 type Storage struct {
-	URI          string
-	VisitedTable string
-	CookiesTable string
-	db           *sql.DB
+	URI                string
+	VisitedTable       string
+	CookiesTable       string
+	MaxOpenConnections uint8
+	db                 *sql.DB
 }
 
 // Init initializes the PostgreSQL storage
@@ -42,6 +43,8 @@ func (s *Storage) Init() error {
 	if _, err = s.db.Exec(query); err != nil {
 		log.Fatal(err)
 	}
+
+	s.db.SetMaxOpenConns(int(s.MaxOpenConnections))
 
 	return nil
 
